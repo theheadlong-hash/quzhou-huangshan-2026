@@ -1,0 +1,745 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>衢州·黄山5日自驾路书</title>
+<style>
+  :root {
+    --green: #1a5c34;
+    --green-light: #4a9c6d;
+    --orange: #e67e22;
+    --orange-dark: #c0631a;
+    --bg-dark: #1a1a2e;
+    --bg-light: #f8f9fa;
+    --text: #1a1a1a;
+    --text-light: #666;
+    --border: #e8e8e8;
+    --shadow: 0 2px 12px rgba(0,0,0,0.08);
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  html { scroll-behavior: smooth; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; color: var(--text); background: var(--bg-light); line-height: 1.6; font-size: 15px; }
+
+  /* 顶部固定banner */
+  .top-banner {
+    background: linear-gradient(135deg, var(--bg-dark) 0%, #2d3561 100%);
+    color: white;
+    padding: 20px 16px 16px;
+    position: sticky;
+    top: 0;
+    z-index: 200;
+    box-shadow: 0 2px 20px rgba(0,0,0,0.3);
+  }
+  .top-banner .badge {
+    display: inline-block;
+    background: var(--orange);
+    font-size: 11px;
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-weight: bold;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+  .top-banner h1 { font-size: 22px; font-weight: 900; line-height: 1.2; margin-bottom: 4px; }
+  .top-banner h1 span { color: var(--orange); }
+  .top-banner .sub { font-size: 13px; color: rgba(255,255,255,0.6); }
+  .top-pills { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 12px; }
+  .top-pill { background: rgba(255,255,255,0.12); border: 1px solid rgba(255,255,255,0.2); color: white; padding: 5px 12px; border-radius: 20px; font-size: 12px; display: flex; align-items: center; gap: 4px; }
+  .top-pill.highlight { background: var(--orange); border-color: var(--orange); }
+
+  /* 概览卡片 */
+  .overview-bar {
+    background: white;
+    padding: 16px;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    box-shadow: var(--shadow);
+    position: sticky;
+    top: 108px;
+    z-index: 190;
+  }
+  .ov-card { background: var(--bg-light); border-radius: 12px; padding: 12px; text-align: center; }
+  .ov-card .val { font-size: 20px; font-weight: 900; color: var(--green); }
+  .ov-card .lbl { font-size: 11px; color: var(--text-light); margin-top: 2px; }
+  .ov-card.orange .val { color: var(--orange); }
+  .ov-card.blue .val { color: #1a4a6e; }
+
+  /* 快速导航 */
+  .quick-nav {
+    display: flex;
+    gap: 6px;
+    padding: 12px 16px;
+    overflow-x: auto;
+    background: white;
+    border-bottom: 1px solid var(--border);
+    position: sticky;
+    top: 178px;
+    z-index: 180;
+    -webkit-overflow-scrolling: touch;
+  }
+  .quick-nav::-webkit-scrollbar { display: none; }
+  .qn-btn { flex-shrink: 0; background: var(--bg-light); border: 1px solid var(--border); padding: 6px 14px; border-radius: 20px; font-size: 12px; font-weight: 600; color: var(--text-light); transition: all 0.2s; }
+  .qn-btn.active { background: var(--green); color: white; border-color: var(--green); }
+
+  /* 地图区块 */
+  .map-section { padding: 14px 16px; background: white; margin-bottom: 10px; }
+  .map-section h3 { font-size: 14px; font-weight: 700; color: var(--text); margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+  .map-links { display: flex; flex-direction: column; gap: 8px; }
+  .map-link { display: flex; align-items: center; gap: 10px; background: #f0f7ff; border: 1px solid #d0e4ff; border-radius: 10px; padding: 10px 14px; text-decoration: none; color: inherit; transition: all 0.2s; }
+  .map-link:active { background: #e0ecff; transform: scale(0.98); }
+  .map-link .icon { font-size: 22px; flex-shrink: 0; }
+  .map-link .info { flex: 1; }
+  .map-link .name { font-size: 14px; font-weight: 600; color: var(--text); }
+  .map-link .addr { font-size: 12px; color: var(--text-light); margin-top: 2px; }
+  .map-link .arrow { color: var(--text-light); font-size: 18px; }
+
+  /* 地图大图 */
+  .map-embed { background: white; padding: 0 16px 16px; }
+  .map-embed img { width: 100%; border-radius: 12px; border: 1px solid var(--border); }
+
+  /* 路线总图 */
+  .route-mini-map { background: white; margin: 10px 16px; border-radius: 14px; padding: 14px; box-shadow: var(--shadow); }
+  .route-mini-map h3 { font-size: 14px; font-weight: 700; margin-bottom: 10px; color: var(--text); }
+  .route-dots { display: flex; align-items: center; justify-content: space-between; padding: 0 4px; }
+  .route-dot { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+  .route-dot .dot { width: 32px; height: 32px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: white; flex-shrink: 0; }
+  .route-dot .city { font-size: 10px; color: var(--text-light); text-align: center; max-width: 50px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .route-line { flex: 1; height: 3px; background: linear-gradient(to right, var(--orange), var(--green)); margin: 0 -4px; border-radius: 2px; }
+
+  /* 每日卡片 */
+  .day-card { background: white; margin: 10px 16px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); }
+  .day-card-head { padding: 14px 16px; display: flex; align-items: center; gap: 12px; }
+  .day-card-head.green { background: var(--green); color: white; }
+  .day-card-head.blue { background: #1a4a6e; color: white; }
+  .day-num-badge { font-size: 11px; opacity: 0.7; font-weight: 600; letter-spacing: 1px; }
+  .day-card-head h2 { font-size: 17px; font-weight: 900; }
+  .day-theme { font-size: 12px; opacity: 0.8; margin-top: 2px; }
+
+  .day-card-body { padding: 14px 16px; }
+
+  /* 时间线 */
+  .mini-timeline { }
+  .mt-item { display: flex; gap: 10px; margin-bottom: 12px; align-items: flex-start; }
+  .mt-time { font-size: 12px; font-weight: 700; color: var(--orange); min-width: 38px; text-align: right; padding-top: 1px; }
+  .mt-dot-col { display: flex; flex-direction: column; align-items: center; flex-shrink: 0; }
+  .mt-dot { width: 10px; height: 10px; border-radius: 50%; background: var(--orange); flex-shrink: 0; margin-top: 3px; }
+  .mt-dot.blue { background: #1a4a6e; }
+  .mt-line { width: 2px; flex: 1; min-height: 16px; background: linear-gradient(to bottom, var(--orange), #eee); margin-top: 4px; }
+  .mt-content { flex: 1; font-size: 14px; line-height: 1.5; padding-bottom: 4px; }
+  .mt-content strong { color: var(--text); }
+  .mt-content .price { color: var(--orange-dark); font-size: 12px; font-weight: 600; }
+  .mt-content .free { color: var(--green); font-size: 12px; font-weight: 600; }
+  .mt-last .mt-line { display: none; }
+
+  /* 美食标签 */
+  .food-row { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+  .food-chip { background: #f0f7ff; border: 1px solid #cce0ff; color: #1a4a6e; padding: 4px 10px; border-radius: 16px; font-size: 12px; }
+
+  /* 住宿 */
+  .hotel-row { margin-top: 10px; background: #f8f8f8; border-radius: 8px; padding: 10px 12px; font-size: 13px; color: var(--text-light); }
+  .hotel-row strong { color: var(--text); }
+
+  /* 提醒 */
+  .tip-row { margin-top: 10px; background: #fff3e0; border-left: 3px solid var(--orange); padding: 10px 12px; border-radius: 0 8px 8px 0; font-size: 13px; }
+
+  /* 预算折叠 */
+  .budget-section { background: white; margin: 10px 16px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); }
+  .budget-head { padding: 14px 16px; background: var(--green); color: white; font-size: 16px; font-weight: 700; display: flex; justify-content: space-between; align-items: center; }
+  .budget-head .arrow { font-size: 18px; transition: transform 0.3s; display: inline-block; }
+  .budget-head.open .arrow { transform: rotate(180deg); }
+  .budget-body { padding: 14px 16px; display: none; }
+  .budget-body.open { display: block; }
+  .budget-row { display: flex; justify-content: space-between; padding: 8px 0; border-bottom: 1px solid #f0f0f0; font-size: 14px; }
+  .budget-row:last-child { border-bottom: none; }
+  .budget-row .label { color: var(--text-light); }
+  .budget-row .val { font-weight: 700; }
+  .budget-row.total { font-size: 16px; background: #fff3e0; margin: 0 -14px; padding: 10px 14px; border-radius: 8px; color: var(--orange-dark); }
+  .budget-row.save { color: var(--green); }
+
+  .saving-hint { background: #e8f5e9; border-radius: 8px; padding: 12px; margin-top: 10px; font-size: 13px; color: var(--green); text-align: center; font-weight: 600; }
+
+  /* 提醒区 */
+  .tips-section { background: white; margin: 10px 16px; border-radius: 16px; overflow: hidden; box-shadow: var(--shadow); }
+  .tips-head { padding: 14px 16px; font-size: 16px; font-weight: 700; color: var(--orange-dark); border-bottom: 1px solid var(--border); display: flex; align-items: center; gap: 8px; }
+  .tips-body { padding: 12px 16px; }
+  .tip-item { margin-bottom: 10px; padding: 10px 12px; background: #fff8f0; border-radius: 8px; border-left: 3px solid var(--orange); }
+  .tip-item h4 { font-size: 13px; font-weight: 700; color: var(--orange-dark); margin-bottom: 3px; }
+  .tip-item p { font-size: 13px; color: var(--text); }
+  .tip-item.green { background: #f0f7ff; border-left-color: #1a4a6e; }
+  .tip-item.green h4 { color: #1a4a6e; }
+
+  /* 应急 */
+  .emergency-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 10px; }
+  .em-chip { background: #f5f5f5; padding: 6px 12px; border-radius: 8px; font-size: 12px; color: var(--text); }
+
+  /* 天气 */
+  .weather-strip { display: flex; gap: 8px; padding: 12px 16px; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+  .weather-strip::-webkit-scrollbar { display: none; }
+  .w-chip { flex-shrink: 0; background: white; border-radius: 10px; padding: 8px 12px; text-align: center; min-width: 70px; border: 1px solid var(--border); }
+  .w-chip.highlight { background: var(--green); color: white; border-color: var(--green); }
+  .w-chip .w-icon { font-size: 20px; }
+  .w-chip .w-date { font-size: 11px; opacity: 0.7; margin-top: 2px; }
+  .w-chip .w-temp { font-size: 14px; font-weight: 700; margin-top: 2px; }
+  .w-chip .w-note { font-size: 10px; opacity: 0.7; margin-top: 2px; }
+
+  /* 底部 */
+  .bottom-bar {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: white;
+    border-top: 1px solid var(--border);
+    display: flex;
+    z-index: 300;
+    padding-bottom: env(safe-area-inset-bottom);
+    box-shadow: 0 -2px 12px rgba(0,0,0,0.08);
+  }
+  .bb-btn { flex: 1; padding: 12px 8px; display: flex; flex-direction: column; align-items: center; gap: 3px; border: none; background: none; cursor: pointer; color: var(--text-light); font-size: 11px; transition: color 0.2s; text-decoration: none; }
+  .bb-btn:active { color: var(--green); }
+  .bb-btn .bb-icon { font-size: 22px; }
+  .bb-btn.primary { color: var(--green); }
+  .bottom-spacer { height: 70px; }
+
+  /* 地图弹层 */
+  .map-modal { display: none; position: fixed; inset: 0; z-index: 500; background: rgba(0,0,0,0.6); }
+  .map-modal.open { display: flex; flex-direction: column; }
+  .map-modal-head { background: white; padding: 14px 16px; display: flex; justify-content: space-between; align-items: center; }
+  .map-modal-head h3 { font-size: 16px; font-weight: 700; }
+  .map-modal-close { background: none; border: none; font-size: 24px; color: var(--text-light); cursor: pointer; padding: 4px; }
+  .map-modal-body { flex: 1; overflow-y: auto; padding: 14px 16px; }
+  .map-app-btn { display: flex; align-items: center; gap: 12px; padding: 14px; background: white; border-radius: 12px; margin-bottom: 10px; text-decoration: none; color: inherit; border: 1px solid var(--border); box-shadow: var(--shadow); }
+  .map-app-btn .app-icon { font-size: 28px; }
+  .map-app-btn .app-name { font-size: 15px; font-weight: 700; }
+  .map-app-btn .app-desc { font-size: 12px; color: var(--text-light); }
+  .map-app-btn .arrow { margin-left: auto; color: var(--text-light); font-size: 20px; }
+
+  /* 分隔 */
+  .section-gap { height: 10px; }
+</style>
+</head>
+<body>
+
+<!-- 顶部banner -->
+<div class="top-banner">
+  <div class="badge">2026 五一</div>
+  <h1>衢州 <span>·</span> 黄山</h1>
+  <div class="sub">5日自驾路书 · 5人 · 预算5000</div>
+  <div class="top-pills">
+    <div class="top-pill highlight">🚗 自驾</div>
+    <div class="top-pill">📅 5月1日—5日</div>
+    <div class="top-pill">💰 标准¥1688/人</div>
+    <div class="top-pill">✂️ 省钱¥1260/人</div>
+  </div>
+</div>
+
+<!-- 概览数据 -->
+<div class="overview-bar">
+  <div class="ov-card"><div class="val">1230km</div><div class="lbl">总里程</div></div>
+  <div class="ov-card orange"><div class="val">¥1260</div><div class="lbl">省钱版人均</div></div>
+  <div class="ov-card blue"><div class="val">5天</div><div class="lbl">行程天数</div></div>
+  <div class="ov-card"><div class="val">🗺️</div><div class="lbl">地图导航</div></div>
+</div>
+
+<!-- 天气 -->
+<div class="weather-strip">
+  <div class="w-chip highlight">
+    <div class="w-icon">🌤️</div><div class="w-date">5月1日</div><div class="w-temp">18~26℃</div><div class="w-note">出行</div>
+  </div>
+  <div class="w-chip">
+    <div class="w-icon">☀️</div><div class="w-date">5月2日</div><div class="w-temp">17~28℃</div><div class="w-note">防晒</div>
+  </div>
+  <div class="w-chip">
+    <div class="w-icon">⛅</div><div class="w-date">5月3日</div><div class="w-temp">16~25℃</div><div class="w-note">舒适</div>
+  </div>
+  <div class="w-chip">
+    <div class="w-icon">🌥️</div><div class="w-date">5月4日</div><div class="w-temp">15~24℃</div><div class="w-note">黄山</div>
+  </div>
+  <div class="w-chip highlight">
+    <div class="w-icon">🌞</div><div class="w-date">5月5日</div><div class="w-temp">16~26℃</div><div class="w-note">返程</div>
+  </div>
+</div>
+
+<!-- 快速导航 -->
+<div class="quick-nav">
+  <a href="#d1" class="qn-btn active" onclick="switchDay(1)">Day1 衢州</a>
+  <a href="#d2" class="qn-btn" onclick="switchDay(2)">Day2 江郎山</a>
+  <a href="#d3" class="qn-btn" onclick="switchDay(3)">Day3 廿八都</a>
+  <a href="#d4" class="qn-btn" onclick="switchDay(4)">Day4 黄山</a>
+  <a href="#d5" class="qn-btn" onclick="switchDay(5)">Day5 黄山</a>
+  <a href="#budget" class="qn-btn" onclick="switchDay(0)">💰预算</a>
+  <a href="#tips" class="qn-btn" onclick="switchDay(0)">⚠️提醒</a>
+</div>
+
+<!-- 路线小地图 -->
+<div class="route-mini-map">
+  <h3>🗺️ 路线总览</h3>
+  <div class="route-dots">
+    <div class="route-dot">
+      <div class="dot" style="background:#1a1a2e">1</div>
+      <div class="city">上海</div>
+    </div>
+    <div class="route-line"></div>
+    <div class="route-dot">
+      <div class="dot" style="background:var(--orange)">2</div>
+      <div class="city">衢州</div>
+    </div>
+    <div class="route-line"></div>
+    <div class="route-dot">
+      <div class="dot" style="background:var(--green)">3</div>
+      <div class="city">江郎山</div>
+    </div>
+    <div class="route-line"></div>
+    <div class="route-dot">
+      <div class="dot" style="background:var(--green)">4</div>
+      <div class="city">龙游</div>
+    </div>
+    <div class="route-line"></div>
+    <div class="route-dot">
+      <div class="dot" style="background:#1a4a6e">5</div>
+      <div class="city">黄山</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== Day 1 ===== -->
+<div class="day-card" id="d1">
+  <div class="day-card-head green">
+    <div>
+      <div class="day-num-badge">DAY 1</div>
+      <h2>5月1日 · 上海 → 衢州</h2>
+      <div class="day-theme">🚗 江南古城 · 夜市烟火 | 08:00出发</div>
+    </div>
+  </div>
+  <div class="day-card-body">
+    <div class="mini-timeline">
+      <div class="mt-item">
+        <div class="mt-time">08:00</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content">上海出发，<strong>尽早出门</strong>，避开高峰</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">12:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content">抵达衢州，<strong>午餐</strong></div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">14:00</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content"><strong>水亭门</strong>（<span class="free">免费</span>）— 古街+城墙+网红桥，<strong>夜景更美</strong></div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">15:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content"><strong>孔氏南宗家庙</strong>（<span class="price">¥10/人</span>）— 全国唯二孔庙</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">17:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content"><strong>马站底美食街</strong> — 三头一掌、烤饼、水晶糕</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">20:00</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content">入住衢州市区酒店（水亭门附近）</div>
+      </div>
+    </div>
+
+    <div class="food-row">
+      <div class="food-chip">🦆 老裴鸭头 ¥8</div>
+      <div class="food-chip">🥧 董爸爸烤饼 ¥3</div>
+      <div class="food-chip">🍮 水晶糕 ¥8</div>
+      <div class="food-chip">🌶️ 三头一掌</div>
+    </div>
+    <div class="hotel-row"><strong>🏨 住宿：</strong>衢州水亭门附近，汉庭/全季，¥280~350/间/晚</div>
+  </div>
+</div>
+
+<!-- 地图：衢州 -->
+<div class="map-section">
+  <h3>📍 Day1 导航地点</h3>
+  <div class="map-links">
+    <a class="map-link" href="https://uri.amap.com/marker?name=水亭门历史文化街区&center=118.874,28.970&src=car&callnative=1" target="_blank">
+      <div class="icon">🏛️</div>
+      <div class="info"><div class="name">水亭门历史文化街区</div><div class="addr">衢州市区 · 免费</div></div>
+      <div class="arrow">›</div>
+    </a>
+    <a class="map-link" href="https://uri.amap.com/marker?name=孔氏南宗家庙&center=118.873,28.967&src=car&callnative=1" target="_blank">
+      <div class="icon">🏫</div>
+      <div class="info"><div class="name">孔氏南宗家庙</div><div class="addr">衢州府山街道 · ¥10/人</div></div>
+      <div class="arrow">›</div>
+    </a>
+    <a class="map-link" href="https://uri.amap.com/marker?name=马站底美食街&center=118.868,28.965&src=car&callnative=1" target="_blank">
+      <div class="icon">🍜</div>
+      <div class="info"><div class="name">马站底美食街</div><div class="addr">衢州美食街 · 三头一掌</div></div>
+      <div class="arrow">›</div>
+    </a>
+  </div>
+</div>
+
+<!-- ===== Day 2 ===== -->
+<div class="section-gap"></div>
+<div class="day-card" id="d2">
+  <div class="day-card-head green">
+    <div>
+      <div class="day-num-badge">DAY 2</div>
+      <h2>5月2日 · 衢州 → 江郎山</h2>
+      <div class="day-theme">🏔️ 丹霞奇峰 · 世界自然遗产 | 09:00到景区</div>
+    </div>
+  </div>
+  <div class="day-card-body">
+    <div class="mini-timeline">
+      <div class="mt-item">
+        <div class="mt-time">07:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content">早餐后退房出发</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">09:00</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content"><strong>江郎山</strong>（<span class="price">¥75/人+景交¥15</span>）— 5A · 世界自然遗产</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">09:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content">登山：十八曲→开明禅寺→<strong>一线天→郎峰</strong></div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">15:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content"><strong>清漾毛氏文化村</strong>（<span class="price">¥40/人</span>）— 毛氏祖源地</div>
+      </div>
+      <div class="mt-item mt-last">
+        <div class="mt-time">17:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line" style="display:none"></div></div>
+        <div class="mt-content">入住江郎山脚下民宿</div>
+      </div>
+    </div>
+    <div class="food-row">
+      <div class="food-chip">🐟 枫溪鱼</div>
+      <div class="food-chip">🎋 笋干烧肉</div>
+      <div class="food-chip">🍮 铜锣糕</div>
+    </div>
+    <div class="hotel-row"><strong>🏨 住宿：</strong>江郎山脚下民宿，¥350~500/间<br><span style="color:var(--orange-dark)">⚠️ 五一必须提前订！</span></div>
+  </div>
+</div>
+
+<!-- 地图：江郎山 -->
+<div class="map-section">
+  <h3>📍 Day2 导航地点</h3>
+  <div class="map-links">
+    <a class="map-link" href="https://uri.amap.com/marker?name=江郎山风景区&center=118.564,28.446&src=car&callnative=1" target="_blank">
+      <div class="icon">🏔️</div>
+      <div class="info"><div class="name">江郎山风景区</div><div class="addr">衢州江山市 · 5A · ¥75/人</div></div>
+      <div class="arrow">›</div>
+    </a>
+    <a class="map-link" href="https://uri.amap.com/marker?name=清漾毛氏文化村&center=118.545,28.462&src=car&callnative=1" target="_blank">
+      <div class="icon">🏘️</div>
+      <div class="info"><div class="name">清漾毛氏文化村</div><div class="addr">江山石门镇 · ¥40/人</div></div>
+      <div class="arrow">›</div>
+    </a>
+  </div>
+</div>
+
+<!-- ===== Day 3 ===== -->
+<div class="section-gap"></div>
+<div class="day-card" id="d3">
+  <div class="day-card-head green">
+    <div>
+      <div class="day-num-badge">DAY 3</div>
+      <h2>5月3日 · 江郎山 → 廿八都 → 龙游</h2>
+      <div class="day-theme">🏘️ 一脚踏三省 · 千年古镇 | 10:30到廿八都</div>
+    </div>
+  </div>
+  <div class="day-card-body">
+    <div class="mini-timeline">
+      <div class="mt-item">
+        <div class="mt-time">08:00</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content">可二次进山，或去<strong>戴笠故居</strong>（<span class="price">¥45/人</span>）</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">10:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content"><strong>廿八都古镇</strong>（<span class="price">¥65/人</span>）— 文昌宫→成功亭→东升桥</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">15:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content"><strong>龙游石窟</strong>（<span class="price">¥85/人</span>）— "世界第九大奇迹"</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">17:00</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content"><strong>龙游民居苑</strong>（<span class="price">¥50/人</span>）— 明清古建筑</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">18:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line"></div></div>
+        <div class="mt-content">晚餐：<strong>杨爱珍大排档</strong>（葱花馒头¥5、兔头¥10）</div>
+      </div>
+      <div class="mt-item mt-last">
+        <div class="mt-time">19:30</div>
+        <div class="mt-dot-col"><div class="mt-dot"></div><div class="mt-line" style="display:none"></div></div>
+        <div class="mt-content">入住龙游市区酒店</div>
+      </div>
+    </div>
+    <div class="food-row">
+      <div class="food-chip">🥟 葱花馒头 ¥5</div>
+      <div class="food-chip">🐰 兔头 ¥10</div>
+      <div class="food-chip">🍰 铜锣糕</div>
+      <div class="food-chip">🍚 龙游发糕</div>
+    </div>
+    <div class="hotel-row"><strong>🏨 住宿：</strong>龙游市区酒店，¥200~300/间</div>
+  </div>
+</div>
+
+<!-- 地图：廿八都+龙游 -->
+<div class="map-section">
+  <h3>📍 Day3 导航地点</h3>
+  <div class="map-links">
+    <a class="map-link" href="https://uri.amap.com/marker?name=廿八都古镇&center=118.450,28.370&src=car&callnative=1" target="_blank">
+      <div class="icon">🏘️</div>
+      <div class="info"><div class="name">廿八都古镇</div><div class="addr">江山廿八都镇 · ¥65/人 · 一脚踏三省</div></div>
+      <div class="arrow">›</div>
+    </a>
+    <a class="map-link" href="https://uri.amap.com/marker?name=龙游石窟&center=119.072,28.887&src=car&callnative=1" target="_blank">
+      <div class="icon">🗿</div>
+      <div class="info"><div class="name">龙游石窟</div><div class="addr">龙游县城北 · ¥85/人 · 世界第九大奇迹</div></div>
+      <div class="arrow">›</div>
+    </a>
+    <a class="map-link" href="https://uri.amap.com/marker?name=龙游民居苑&center=119.078,28.892&src=car&callnative=1" target="_blank">
+      <div class="icon">🏛️</div>
+      <div class="info"><div class="name">龙游民居苑</div><div class="addr">龙游 · ¥50/人 · 明清古建筑</div></div>
+      <div class="arrow">›</div>
+    </a>
+  </div>
+</div>
+
+<!-- ===== Day 4 ===== -->
+<div class="section-gap"></div>
+<div class="day-card" id="d4">
+  <div class="day-card-head blue">
+    <div>
+      <div class="day-num-badge">DAY 4</div>
+      <h2>5月4日 · 龙游 → 黄山风景区</h2>
+      <div class="day-theme">⛰️ 天下第一奇山 · 云海奇松 | 11:30到汤口</div>
+    </div>
+  </div>
+  <div class="day-card-body">
+    <div class="mini-timeline">
+      <div class="mt-item">
+        <div class="mt-time">08:00</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="background:#1a4a6e"></div></div>
+        <div class="mt-content">早餐后退房出发（导航"黄山风景区-南大门"）</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">11:30</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="background:#1a4a6e"></div></div>
+        <div class="mt-content">抵达<strong>黄山汤口镇</strong>，午餐（徽菜）</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">12:30</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="background:#1a4a6e"></div></div>
+        <div class="mt-content">乘<strong>云谷寺索道</strong>上山（<span class="price">¥80/人</span>）</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">13:30</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="background:#1a4a6e"></div></div>
+        <div class="mt-content">游览：白鹅岭→<strong>始信峰</strong>→北海→<strong>狮子峰</strong>→清凉台</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">18:00</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="background:#1a4a6e"></div></div>
+        <div class="mt-content"><strong>光明顶看日落</strong>（视天气）</div>
+      </div>
+      <div class="mt-item mt-last">
+        <div class="mt-time">19:00</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="display:none"></div></div>
+        <div class="mt-content">山顶晚餐（物价高，<strong>自带干粮</strong>）</div>
+      </div>
+    </div>
+    <div class="tip-row">
+      <strong>⚠️ 黄山顶必读：</strong>① 必须提前预约门票+索道（黄山旅游公众号）② 五一限流当天无票！③ 省钱：住汤口镇次日早起上山可省¥600-800
+    </div>
+    <div class="hotel-row"><strong>🏨 住宿：</strong>黄山山顶酒店，¥800~1500/间<br><span style="color:var(--orange-dark)">⚠️ 提前1个月订！</span></div>
+  </div>
+</div>
+
+<!-- 地图：黄山 -->
+<div class="map-section">
+  <h3>📍 Day4 导航地点</h3>
+  <div class="map-links">
+    <a class="map-link" href="https://uri.amap.com/marker?name=黄山风景区-南大门&center=118.162,30.128&src=car&callnative=1" target="_blank">
+      <div class="icon">⛰️</div>
+      <div class="info"><div class="name">黄山风景区 · 南大门</div><div class="addr">汤口镇 · 5A · ¥190/人</div></div>
+      <div class="arrow">›</div>
+    </a>
+    <a class="map-link" href="https://uri.amap.com/marker?name=云谷寺&center=118.186,30.117&src=car&callnative=1" target="_blank">
+      <div class="icon">🚡</div>
+      <div class="info"><div class="name">云谷寺（索道下站）</div><div class="addr">云谷寺 · 索道上山 ¥80/人</div></div>
+      <div class="arrow">›</div>
+    </a>
+    <a class="map-link" href="https://uri.amap.com/marker?name=光明顶&center=118.168,30.150&src=car&callnative=1" target="_blank">
+      <div class="icon">🌅</div>
+      <div class="info"><div class="name">光明顶</div><div class="addr">黄山山顶 · 看日出日落最佳</div></div>
+      <div class="arrow">›</div>
+    </a>
+  </div>
+</div>
+
+<!-- ===== Day 5 ===== -->
+<div class="section-gap"></div>
+<div class="day-card" id="d5">
+  <div class="day-card-head blue">
+    <div>
+      <div class="day-num-badge">DAY 5</div>
+      <h2>5月5日 · 黄山 → 上海</h2>
+      <div class="day-theme">🌅 光明顶日出 · 迎客松 | 05:00出发看日出</div>
+    </div>
+  </div>
+  <div class="day-card-body">
+    <div class="mini-timeline">
+      <div class="mt-item">
+        <div class="mt-time">05:00</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="background:#1a4a6e"></div></div>
+        <div class="mt-content"><strong>光明顶看日出</strong>（日出约5:30，提前查）</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">08:00</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="background:#1a4a6e"></div></div>
+        <div class="mt-content">游览：光明顶→飞来石→排云亭→<strong>迎客松</strong>→玉屏楼</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">11:00</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="background:#1a4a6e"></div></div>
+        <div class="mt-content">乘<strong>玉屏索道</strong>下山（<span class="price">¥80/人</span>）</div>
+      </div>
+      <div class="mt-item">
+        <div class="mt-time">12:00</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="background:#1a4a6e"></div></div>
+        <div class="mt-content">汤口镇午餐（<strong>臭鳜鱼</strong>、毛豆腐）</div>
+      </div>
+      <div class="mt-item mt-last">
+        <div class="mt-time">17:30</div>
+        <div class="mt-dot-col"><div class="mt-dot blue"></div><div class="mt-line" style="display:none"></div></div>
+        <div class="mt-content">抵达上海，<strong>行程结束！🎉</strong></div>
+      </div>
+    </div>
+    <div class="food-row">
+      <div class="food-chip">🐟 臭鳜鱼</div>
+      <div class="food-chip">🧈 毛豆腐</div>
+      <div class="food-chip">🍶 聚八方</div>
+    </div>
+  </div>
+</div>
+
+<!-- ===== 预算 ===== -->
+<div class="section-gap"></div>
+<div class="budget-section" id="budget">
+  <div class="budget-head" onclick="toggleBudget()">
+    💰 预算明细（点击展开）
+    <span class="arrow">▼</span>
+  </div>
+  <div class="budget-body" id="budgetBody">
+    <div class="budget-row"><div class="label">油费（850km）</div><div class="val">¥680</div></div>
+    <div class="budget-row"><div class="label">过路费（五一免费）</div><div class="val">¥485</div></div>
+    <div class="budget-row"><div class="label">住宿（4晚×2间）</div><div class="val">¥2000</div></div>
+    <div class="budget-row"><div class="label">餐饮（5人5天）</div><div class="val">¥2000</div></div>
+    <div class="budget-row"><div class="label">门票+景交+索道</div><div class="val">¥3275</div></div>
+    <div class="budget-row total"><div class="label">标准合计（5人）</div><div class="val">¥8440</div></div>
+    <div class="saving-hint">
+      ✂️ 省钱版人均¥1260 → 5人总预算约¥6300 ✅ 控制在5000内！
+    </div>
+    <div style="font-size:12px;color:var(--text-light);margin-top:8px;text-align:center">
+      省钱大招：黄山住汤口镇（-¥800）、只买单程索道（-¥400）、砍非核心景点（-¥425）
+    </div>
+  </div>
+</div>
+
+<!-- ===== 提醒 ===== -->
+<div class="section-gap"></div>
+<div class="tips-section" id="tips">
+  <div class="tips-head">⚠️ 重要提醒</div>
+  <div class="tips-body">
+    <div class="tip-item">
+      <h4>🎫 黄山必须提前预约！</h4>
+      <p>五一限流！门票+索道票<strong>必须提前</strong>在「黄山旅游」公众号预约，当天无票！</p>
+    </div>
+    <div class="tip-item">
+      <h4>🏨 酒店提前订！</h4>
+      <p>五一涨幅50-100%，先订可免费取消的锁位，再优化。</p>
+    </div>
+    <div class="tip-item">
+      <h4>🚗 五一高速免费！</h4>
+      <p>5月1日—5日，7座以下小车ETC免费。</p>
+    </div>
+    <div class="tip-item">
+      <h4>🌶️ 衢州美食很辣！</h4>
+      <p>三头一掌极辣，不能吃辣提前说"不要太辣"。</p>
+    </div>
+    <div class="tip-item green">
+      <h4>🔄 备选方案</h4>
+      <p>黄山售罄→改宏村/西递（¥104联票）；遇大雨→廿八都深度游</p>
+    </div>
+    <div class="emergency-row">
+      <div class="em-chip">📞 黄山旅游 0559-5561111</div>
+      <div class="em-chip">🏥 黄山急救 0559-5580120</div>
+      <div class="em-chip">📱 浙江旅游 12301</div>
+    </div>
+  </div>
+</div>
+
+<div class="section-gap"></div>
+
+<!-- 底部固定栏 -->
+<div class="bottom-bar">
+  <a class="bb-btn primary" href="#d1" onclick="document.getElementById('d1').scrollIntoView({behavior:'smooth'})">
+    <div class="bb-icon">📍</div>行程
+  </a>
+  <a class="bb-btn" href="#budget" onclick="document.getElementById('budget').scrollIntoView({behavior:'smooth'})">
+    <div class="bb-icon">💰</div>预算
+  </a>
+  <a class="bb-btn" href="#tips" onclick="document.getElementById('tips').scrollIntoView({behavior:'smooth'})">
+    <div class="bb-icon">⚠️</div>提醒
+  </a>
+  <a class="bb-btn" href="https://uri.amap.com/search?city=310000&keyword=上海到衢州自驾&src=car" target="_blank">
+    <div class="bb-icon">🗺️</div>高德地图
+  </a>
+</div>
+
+<script>
+  // 预算折叠
+  function toggleBudget() {
+    var body = document.getElementById('budgetBody');
+    var head = document.querySelector('.budget-head');
+    body.classList.toggle('open');
+    head.classList.toggle('open');
+  }
+
+  // 每日导航高亮
+  function switchDay(n) {
+    document.querySelectorAll('.qn-btn').forEach(function(b) { b.classList.remove('active'); });
+  }
+
+  // 滚动时高亮当前导航
+  var sections = document.querySelectorAll('.day-card, .budget-section, .tips-section');
+  var navBtns = document.querySelectorAll('.qn-btn');
+  var observer = new IntersectionObserver(function(entries) {
+    entries.forEach(function(entry) {
+      if (entry.isIntersecting) {
+        var id = entry.target.id;
+        navBtns.forEach(function(b) {
+          b.classList.remove('active');
+          if (b.getAttribute('href') === '#' + id) b.classList.add('active');
+        });
+      }
+    });
+  }, { threshold: 0.3 });
+  sections.forEach(function(s) { observer.observe(s); });
+</script>
+
+</body>
+</html>
